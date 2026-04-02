@@ -17,6 +17,12 @@ struct Endpoint: Sendable {
         return Endpoint(path: "/api/v1/auth/login", method: "POST", body: body)
     }
 
+    nonisolated static func forgotPassword(email: String) -> Endpoint {
+        let bodyDict = ["email": email]
+        let body = try? JSONSerialization.data(withJSONObject: bodyDict)
+        return Endpoint(path: "/api/v1/auth/forgot-password", method: "POST", body: body)
+    }
+
     nonisolated func urlRequest(baseURL: String = "https://api.example.com") throws -> URLRequest {
         guard let url = URL(string: baseURL + path) else {
             throw APIError.invalidURL

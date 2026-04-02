@@ -163,8 +163,8 @@ struct SignInWithEmailView: View {
 
     private var linksSection: some View {
         VStack(spacing: 20) {
-            Button(String(localized: "Forgot password?")) {
-                // Navigate to Reset Password screen
+            NavigationLink(value: AuthRoute.forgotPassword) {
+                Text(String(localized: "Forgot password?"))
             }
             .font(.system(size: 14, weight: .bold))
             .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))

@@ -16,4 +16,9 @@ final class AuthService: AuthServiceProtocol {
         let endpoint = Endpoint.login(email: email, password: password)
         return try await apiClient.request(endpoint, as: AuthResponse.self)
     }
+
+    func forgotPassword(email: String) async throws {
+        let endpoint = Endpoint.forgotPassword(email: email)
+        try await apiClient.requestVoid(endpoint)
+    }
 }

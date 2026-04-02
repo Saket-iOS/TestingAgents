@@ -10,4 +10,8 @@ final class MockAuthService: AuthServiceProtocol {
         try await Task.sleep(for: .seconds(1))
         return AuthResponse(token: "mock-token", userId: "mock-user-id")
     }
+
+    func forgotPassword(email: String) async throws {
+        try await Task.sleep(for: .seconds(1))
+    }
 }

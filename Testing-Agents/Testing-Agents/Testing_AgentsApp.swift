@@ -23,6 +23,10 @@ struct Testing_AgentsApp: App {
                         SignInWithEmailView(
                             viewModel: SignInWithEmailViewModel(authService: container.authService)
                         )
+                    case .forgotPassword:
+                        ForgotPasswordView(
+                            viewModel: ForgotPasswordViewModel(authService: container.authService)
+                        )
                     }
                 }
             }
@@ -32,4 +36,5 @@ struct Testing_AgentsApp: App {
 
 enum AuthRoute: Hashable {
     case signIn
+    case forgotPassword
 }

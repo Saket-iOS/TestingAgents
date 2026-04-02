@@ -25,4 +25,5 @@ extension AuthResponse: Decodable {
 protocol AuthServiceProtocol {
     func register(email: String, password: String) async throws -> AuthResponse
     func login(email: String, password: String) async throws -> AuthResponse
+    func forgotPassword(email: String) async throws
 }
