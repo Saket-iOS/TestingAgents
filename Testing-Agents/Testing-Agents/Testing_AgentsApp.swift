@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct Testing_AgentsApp: App {
+    private let container = ServiceContainer.shared
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                CreateAccountView(
+                    viewModel: CreateAccountViewModel(authService: container.authService)
+                )
+            }
         }
     }
 }
