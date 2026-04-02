@@ -90,7 +90,7 @@ struct CreateAccountView: View {
                 } label: {
                     Image(systemName: viewModel.isPasswordVisible ? "eye" : "eye.slash")
                         .foregroundStyle(.gray)
-                        .frame(minWidth: 44, minHeight: 44)
+                        .frame(minWidth: 44)
                 }
                 .accessibilityLabel(String(localized: viewModel.isPasswordVisible ? "Hide password" : "Show password"))
             }
