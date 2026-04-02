@@ -1,22 +1,29 @@
 import SwiftUI
 
-struct CreateAccountView: View {
-    @Bindable var viewModel: CreateAccountViewModel
+struct SignInWithEmailView: View {
+    @Bindable var viewModel: SignInWithEmailViewModel
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var focusedField: Field?
+
+    private enum Field: Hashable {
+        case email
+        case password
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
                 emailSection
                 passwordSection
-                createAccountButton
-                signInLink
+                signInButton
+                linksSection
             }
             .padding(.horizontal, 20)
             .padding(.top, 24)
         }
+        .scrollDismissesKeyboard(.interactively)
         .background(Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 243.0 / 255.0))
-        .navigationTitle(String(localized: "Create your account"))
+        .navigationTitle(String(localized: "Sign in with email"))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -43,6 +50,8 @@ struct CreateAccountView: View {
         }
     }
 
+    // MARK: - Email Section
+
     private var emailSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(String(localized: "Email"))
@@ -52,8 +61,12 @@ struct CreateAccountView: View {
             TextField(String(localized: "Email address"), text: $viewModel.email)
                 .font(.system(size: 16))
                 .keyboardType(.emailAddress)
+                .textContentType(.emailAddress)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .focused($focusedField, equals: .email)
+                .submitLabel(.next)
+                .onSubmit { focusedField = .password }
                 .padding()
                 .background(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -63,9 +76,12 @@ struct CreateAccountView: View {
                 Text(emailError)
                     .font(.system(size: 13))
                     .foregroundStyle(.red)
+                    .accessibilityLabel(emailError)
             }
         }
     }
+
+    // MARK: - Password Section
 
     private var passwordSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -82,8 +98,16 @@ struct CreateAccountView: View {
                     }
                 }
                 .font(.system(size: 16))
+                .textContentType(.password)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .focused($focusedField, equals: .password)
+                .submitLabel(.go)
+                .onSubmit {
+                    if viewModel.isFormValid && !viewModel.isLoading && !viewModel.isLockedOut {
+                        Task { await viewModel.signIn() }
+                    }
+                }
 
                 Button {
                     viewModel.isPasswordVisible.toggle()
@@ -98,31 +122,23 @@ struct CreateAccountView: View {
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
 
-            HStack {
-                Spacer()
-                if let strength = viewModel.passwordStrength {
-                    Text(strength.label)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(strength.color)
-                }
-            }
-
             if let passwordError = viewModel.passwordError {
                 Text(passwordError)
                     .font(.system(size: 13))
                     .foregroundStyle(.red)
+                    .accessibilityLabel(passwordError)
             }
         }
     }
 
-    private var createAccountButton: some View {
+    // MARK: - Sign In Button
+
+    private var signInButton: some View {
         Button {
-            Task {
-                await viewModel.createAccount()
-            }
+            Task { await viewModel.signIn() }
         } label: {
             ZStack {
-                Text(String(localized: "Create Account"))
+                Text(String(localized: "Sign in"))
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                     .opacity(viewModel.isLoading ? 0 : 1)
@@ -137,30 +153,43 @@ struct CreateAccountView: View {
             .background(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
-        .disabled(!viewModel.isFormValid || viewModel.isLoading)
-        .opacity(viewModel.isFormValid ? 1.0 : 0.5)
-        .accessibilityLabel(String(localized: "Create Account"))
+        .disabled(!viewModel.isFormValid || viewModel.isLoading || viewModel.isLockedOut)
+        .opacity(viewModel.isFormValid && !viewModel.isLockedOut ? 1.0 : 0.5)
+        .accessibilityLabel(String(localized: "Sign in"))
         .padding(.top, 8)
     }
 
-    private var signInLink: some View {
-        HStack(spacing: 4) {
-            Text(String(localized: "Already have an account?"))
-                .font(.system(size: 14))
-                .foregroundStyle(.secondary)
+    // MARK: - Links Section
 
-            NavigationLink(String(localized: "Sign In"), value: AuthRoute.signIn)
+    private var linksSection: some View {
+        VStack(spacing: 20) {
+            Button(String(localized: "Forgot password?")) {
+                // Navigate to Reset Password screen
+            }
+            .font(.system(size: 14, weight: .bold))
+            .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+            .accessibilityLabel(String(localized: "Forgot password?"))
+
+            HStack(spacing: 4) {
+                Text(String(localized: "New user?"))
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+
+                Button(String(localized: "Create an account")) {
+                    dismiss()
+                }
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
-                .accessibilityLabel(String(localized: "Sign In"))
+                .accessibilityLabel(String(localized: "Create an account"))
+            }
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        CreateAccountView(
-            viewModel: CreateAccountViewModel(authService: MockAuthService())
+        SignInWithEmailView(
+            viewModel: SignInWithEmailViewModel(authService: MockAuthService())
         )
     }
 }

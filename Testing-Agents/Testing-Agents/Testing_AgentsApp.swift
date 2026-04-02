@@ -17,7 +17,19 @@ struct Testing_AgentsApp: App {
                 CreateAccountView(
                     viewModel: CreateAccountViewModel(authService: container.authService)
                 )
+                .navigationDestination(for: AuthRoute.self) { route in
+                    switch route {
+                    case .signIn:
+                        SignInWithEmailView(
+                            viewModel: SignInWithEmailViewModel(authService: container.authService)
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+enum AuthRoute: Hashable {
+    case signIn
 }

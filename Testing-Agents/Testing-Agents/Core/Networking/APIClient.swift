@@ -16,10 +16,7 @@ final class APIClient: APIClientProtocol, Sendable {
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw APIError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
-            if http.statusCode == 409 {
-                throw APIError.emailAlreadyRegistered
-            }
-            throw APIError.http(http.statusCode)
+            throw Self.mapHTTPError(http.statusCode)
         }
         return try decoder.decode(T.self, from: data)
     }
@@ -29,10 +26,17 @@ final class APIClient: APIClientProtocol, Sendable {
         let (_, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw APIError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
-            if http.statusCode == 409 {
-                throw APIError.emailAlreadyRegistered
-            }
-            throw APIError.http(http.statusCode)
+            throw Self.mapHTTPError(http.statusCode)
+        }
+    }
+
+    private nonisolated static func mapHTTPError(_ statusCode: Int) -> APIError {
+        switch statusCode {
+        case 401: return .incorrectCredentials
+        case 404: return .accountNotFound
+        case 409: return .emailAlreadyRegistered
+        case 429: return .rateLimited
+        default: return .http(statusCode)
         }
     }
 }
