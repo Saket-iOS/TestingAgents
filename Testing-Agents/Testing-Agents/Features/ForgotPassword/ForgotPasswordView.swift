@@ -6,9 +6,9 @@ struct ForgotPasswordView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: Constants.sectionSpacing) {
                 Text(String(localized: "Enter your email address and we'll send you a link to reset your password."))
-                    .font(.system(size: 15))
+                    .font(.system(size: Constants.descriptionFontSize))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -16,11 +16,11 @@ struct ForgotPasswordView: View {
                 emailSection
                 submitButton
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 24)
+            .padding(.horizontal, Constants.horizontalPadding)
+            .padding(.top, Constants.sectionSpacing)
         }
         .scrollDismissesKeyboard(.interactively)
-        .background(Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 243.0 / 255.0))
+        .background(Constants.backgroundColor)
         .navigationTitle(String(localized: "Forgot password"))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
@@ -29,9 +29,9 @@ struct ForgotPasswordView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: Constants.backIcon)
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+                        .foregroundStyle(Constants.primaryColor)
                 }
                 .accessibilityLabel(String(localized: "Back"))
             }
@@ -56,13 +56,13 @@ struct ForgotPasswordView: View {
     // MARK: - Email Section
 
     private var emailSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Constants.innerSpacing) {
             Text(String(localized: "Email"))
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+                .font(.system(size: Constants.bodyFontSize, weight: .bold))
+                .foregroundStyle(Constants.primaryColor)
 
             TextField(String(localized: "Email address"), text: $viewModel.email)
-                .font(.system(size: 16))
+                .font(.system(size: Constants.bodyFontSize))
                 .keyboardType(.emailAddress)
                 .textContentType(.emailAddress)
                 .textInputAutocapitalization(.never)
@@ -75,12 +75,12 @@ struct ForgotPasswordView: View {
                 }
                 .padding()
                 .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Constants.inputCornerRadius))
                 .accessibilityLabel(String(localized: "Email address"))
 
             if let emailError = viewModel.emailError {
                 Text(emailError)
-                    .font(.system(size: 13))
+                    .font(.system(size: Constants.captionFontSize))
                     .foregroundStyle(.red)
                     .accessibilityLabel(emailError)
             }
@@ -95,7 +95,7 @@ struct ForgotPasswordView: View {
         } label: {
             ZStack {
                 Text(String(localized: "Submit"))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: Constants.bodyFontSize, weight: .bold))
                     .foregroundStyle(.white)
                     .opacity(viewModel.isLoading ? 0 : 1)
 
@@ -105,15 +105,38 @@ struct ForgotPasswordView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .frame(height: Constants.buttonHeight)
+            .background(Constants.primaryColor)
+            .clipShape(RoundedRectangle(cornerRadius: Constants.buttonCornerRadius))
         }
         .disabled(!viewModel.isEmailValid || viewModel.isLoading)
-        .opacity(viewModel.isEmailValid ? 1.0 : 0.5)
+        .opacity(viewModel.isEmailValid ? 1.0 : Constants.disabledOpacity)
         .accessibilityLabel(String(localized: "Submit"))
-        .padding(.top, 8)
+        .padding(.top, Constants.innerSpacing)
     }
+}
+
+// MARK: - Constants
+
+private enum Constants {
+    static let backgroundColor = Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 243.0 / 255.0)
+    static let primaryColor = Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0)
+
+    static let descriptionFontSize: CGFloat = 15
+    static let bodyFontSize: CGFloat = 16
+    static let captionFontSize: CGFloat = 13
+
+    static let sectionSpacing: CGFloat = 24
+    static let innerSpacing: CGFloat = 8
+    static let horizontalPadding: CGFloat = 20
+
+    static let inputCornerRadius: CGFloat = 12
+    static let buttonCornerRadius: CGFloat = 14
+    static let buttonHeight: CGFloat = 50
+
+    static let disabledOpacity: CGFloat = 0.5
+
+    static let backIcon = "chevron.left"
 }
 
 #Preview {

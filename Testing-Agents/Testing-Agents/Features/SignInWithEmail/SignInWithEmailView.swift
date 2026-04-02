@@ -12,17 +12,17 @@ struct SignInWithEmailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: Constants.sectionSpacing) {
                 emailSection
                 passwordSection
                 signInButton
                 linksSection
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 24)
+            .padding(.horizontal, Constants.horizontalPadding)
+            .padding(.top, Constants.sectionSpacing)
         }
         .scrollDismissesKeyboard(.interactively)
-        .background(Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 243.0 / 255.0))
+        .background(Constants.backgroundColor)
         .navigationTitle(String(localized: "Sign in with email"))
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
@@ -31,9 +31,9 @@ struct SignInWithEmailView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: Constants.backIcon)
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+                        .foregroundStyle(Constants.primaryColor)
                 }
                 .accessibilityLabel(String(localized: "Back"))
             }
@@ -53,13 +53,13 @@ struct SignInWithEmailView: View {
     // MARK: - Email Section
 
     private var emailSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Constants.innerSpacing) {
             Text(String(localized: "Email"))
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+                .font(.system(size: Constants.bodyFontSize, weight: .bold))
+                .foregroundStyle(Constants.primaryColor)
 
             TextField(String(localized: "Email address"), text: $viewModel.email)
-                .font(.system(size: 16))
+                .font(.system(size: Constants.bodyFontSize))
                 .keyboardType(.emailAddress)
                 .textContentType(.emailAddress)
                 .textInputAutocapitalization(.never)
@@ -69,12 +69,12 @@ struct SignInWithEmailView: View {
                 .onSubmit { focusedField = .password }
                 .padding()
                 .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Constants.inputCornerRadius))
                 .accessibilityLabel(String(localized: "Email address"))
 
             if let emailError = viewModel.emailError {
                 Text(emailError)
-                    .font(.system(size: 13))
+                    .font(.system(size: Constants.captionFontSize))
                     .foregroundStyle(.red)
                     .accessibilityLabel(emailError)
             }
@@ -84,10 +84,10 @@ struct SignInWithEmailView: View {
     // MARK: - Password Section
 
     private var passwordSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Constants.innerSpacing) {
             Text(String(localized: "Password"))
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+                .font(.system(size: Constants.bodyFontSize, weight: .bold))
+                .foregroundStyle(Constants.primaryColor)
 
             HStack {
                 Group {
@@ -97,7 +97,7 @@ struct SignInWithEmailView: View {
                         SecureField(String(localized: "Password"), text: $viewModel.password)
                     }
                 }
-                .font(.system(size: 16))
+                .font(.system(size: Constants.bodyFontSize))
                 .textContentType(.password)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -112,19 +112,19 @@ struct SignInWithEmailView: View {
                 Button {
                     viewModel.isPasswordVisible.toggle()
                 } label: {
-                    Image(systemName: viewModel.isPasswordVisible ? "eye" : "eye.slash")
+                    Image(systemName: viewModel.isPasswordVisible ? Constants.showPasswordIcon : Constants.hidePasswordIcon)
                         .foregroundStyle(.gray)
-                        .frame(minWidth: 44)
+                        .frame(minWidth: Constants.toggleMinWidth)
                 }
                 .accessibilityLabel(String(localized: viewModel.isPasswordVisible ? "Hide password" : "Show password"))
             }
             .padding()
             .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: Constants.inputCornerRadius))
 
             if let passwordError = viewModel.passwordError {
                 Text(passwordError)
-                    .font(.system(size: 13))
+                    .font(.system(size: Constants.captionFontSize))
                     .foregroundStyle(.red)
                     .accessibilityLabel(passwordError)
             }
@@ -139,7 +139,7 @@ struct SignInWithEmailView: View {
         } label: {
             ZStack {
                 Text(String(localized: "Sign in"))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: Constants.bodyFontSize, weight: .bold))
                     .foregroundStyle(.white)
                     .opacity(viewModel.isLoading ? 0 : 1)
 
@@ -149,41 +149,69 @@ struct SignInWithEmailView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .frame(height: Constants.buttonHeight)
+            .background(Constants.primaryColor)
+            .clipShape(RoundedRectangle(cornerRadius: Constants.buttonCornerRadius))
         }
         .disabled(!viewModel.isFormValid || viewModel.isLoading || viewModel.isLockedOut)
-        .opacity(viewModel.isFormValid && !viewModel.isLockedOut ? 1.0 : 0.5)
+        .opacity(viewModel.isFormValid && !viewModel.isLockedOut ? 1.0 : Constants.disabledOpacity)
         .accessibilityLabel(String(localized: "Sign in"))
-        .padding(.top, 8)
+        .padding(.top, Constants.innerSpacing)
     }
 
     // MARK: - Links Section
 
     private var linksSection: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Constants.linkSpacing) {
             NavigationLink(value: AuthRoute.forgotPassword) {
                 Text(String(localized: "Forgot password?"))
             }
-            .font(.system(size: 14, weight: .bold))
-            .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+            .font(.system(size: Constants.linkFontSize, weight: .bold))
+            .foregroundStyle(Constants.primaryColor)
             .accessibilityLabel(String(localized: "Forgot password?"))
 
-            HStack(spacing: 4) {
+            HStack(spacing: Constants.linkInnerSpacing) {
                 Text(String(localized: "New user?"))
-                    .font(.system(size: 14))
+                    .font(.system(size: Constants.linkFontSize))
                     .foregroundStyle(.secondary)
 
                 Button(String(localized: "Create an account")) {
                     dismiss()
                 }
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0))
+                .font(.system(size: Constants.linkFontSize, weight: .bold))
+                .foregroundStyle(Constants.primaryColor)
                 .accessibilityLabel(String(localized: "Create an account"))
             }
         }
     }
+}
+
+// MARK: - Constants
+
+private enum Constants {
+    static let backgroundColor = Color(red: 237.0 / 255.0, green: 238.0 / 255.0, blue: 243.0 / 255.0)
+    static let primaryColor = Color(red: 27.0 / 255.0, green: 42.0 / 255.0, blue: 74.0 / 255.0)
+
+    static let bodyFontSize: CGFloat = 16
+    static let captionFontSize: CGFloat = 13
+    static let linkFontSize: CGFloat = 14
+
+    static let sectionSpacing: CGFloat = 24
+    static let innerSpacing: CGFloat = 8
+    static let horizontalPadding: CGFloat = 20
+    static let linkSpacing: CGFloat = 20
+    static let linkInnerSpacing: CGFloat = 4
+
+    static let inputCornerRadius: CGFloat = 12
+    static let buttonCornerRadius: CGFloat = 14
+    static let buttonHeight: CGFloat = 50
+
+    static let disabledOpacity: CGFloat = 0.5
+    static let toggleMinWidth: CGFloat = 44
+
+    static let backIcon = "chevron.left"
+    static let showPasswordIcon = "eye"
+    static let hidePasswordIcon = "eye.slash"
 }
 
 #Preview {
